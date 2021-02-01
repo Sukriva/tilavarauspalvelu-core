@@ -15,6 +15,7 @@ from applications.models import (
     Person,
     Recurrence,
 )
+from permissions.models import ServiceSectorRole, UnitRole
 from reservation_units.models import (
     Equipment,
     EquipmentCategory,
@@ -23,7 +24,7 @@ from reservation_units.models import (
 )
 from reservations.models import AbilityGroup, AgeGroup, Reservation, ReservationPurpose
 from resources.models import Resource
-from spaces.models import District, Location, ServiceSector, Space
+from spaces.models import District, Location, ServiceSector, Space, Unit
 
 
 @pytest.fixture(autouse=True)
@@ -42,6 +43,17 @@ def user():
     )
 
 
+@pytest.mark.django_db
+@pytest.fixture
+def user_2():
+    return get_user_model().objects.create(
+        username="test_user_2",
+        first_name="Jon",
+        last_name="Doe",
+        email="jon.doe@foo.com",
+    )
+
+
 @pytest.fixture
 def api_client():
     return APIClient()
@@ -55,8 +67,20 @@ def user_api_client(user):
 
 
 @pytest.fixture
+def user_2_api_client(user_2):
+    api_client = APIClient()
+    api_client.force_authenticate(user)
+    return api_client
+
+
+@pytest.fixture
 def resource():
     return Resource.objects.create(name="Test resource")
+
+
+@pytest.fixture
+def unit():
+    return Unit.objects.create(name="Test unit")
 
 
 @pytest.fixture
@@ -122,6 +146,11 @@ def location():
     return Location.objects.create(
         address_street="Osoitetienkatu 13b", address_zip="33540", address_city="Tampere"
     )
+
+
+@pytest.fixture
+def service_sector():
+    return ServiceSector.objects.create(name="Test service sector")
 
 
 @pytest.fixture
@@ -246,6 +275,42 @@ def valid_resource_data(space):
         "space_id": space.pk,
         "buffer_time_before": "00:05:00",
         "buffer_time_after": "00:05:00",
+    }
+
+
+@pytest.fixture
+def valid_reservation_unit_data(unit, equipment_hammer):
+    """ Valid JSON data for creating a new ReservationUnit """
+    return {
+        "name": {
+            "fi": "Uusi varausyksikkö",
+            "en": "New reservation unit",
+            "sv": "Nya reservation sak",
+        },
+        "require_introduction": False,
+        "terms_of_use": "Do not mess it up",
+        "equipment_ids": [equipment_hammer.id],
+        "unit_id": unit.pk,
+    }
+
+
+@pytest.fixture
+def valid_service_sector_role_admin_data(user_2, service_sector):
+    """ Valid JSON data for creating a new ReservationUnit """
+    return {
+        "role": ServiceSectorRole.ROLE_ADMIN,
+        "service_sector_id": service_sector.pk,
+        "user_id": user_2.pk,
+    }
+
+
+@pytest.fixture
+def valid_service_sector_application_manager_role_data(user_2, service_sector):
+    """ Valid JSON data for creating a new ReservationUnit """
+    return {
+        "role": ServiceSectorRole.ROLE_APPLICATION_MANAGER,
+        "service_sector_id": service_sector.pk,
+        "user_id": user_2.pk,
     }
 
 

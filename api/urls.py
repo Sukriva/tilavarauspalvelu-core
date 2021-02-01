@@ -2,6 +2,7 @@ from rest_framework import routers
 
 from .application_round_api import ApplicationRoundViewSet
 from .applications_api import ApplicationEventViewSet, ApplicationViewSet
+from .permissions_api import ServiceSectorRoleViewSet, UnitRoleViewSet
 from .reservation_units_api import (
     EquipmentCategoryViewSet,
     EquipmentViewSet,
@@ -12,6 +13,7 @@ from .reservation_units_api import (
 from .reservations_api import AbilityGroupViewSet, AgeGroupViewSet, ReservationViewSet
 from .resources_api import ResourceViewSet
 from .space_api import DistrictViewSet
+from .permissions_api import UnitRoleViewSet, ServiceSectorRoleViewSet
 
 router = routers.DefaultRouter()
 
@@ -22,6 +24,8 @@ router.register(r"application", ApplicationViewSet, "application")
 router.register(r"application_event", ApplicationEventViewSet, "application_event")
 router.register(r"application_round", ApplicationRoundViewSet, "application_round")
 router.register(r"parameters/district", DistrictViewSet, "district")
+router.register(r"unit_role", UnitRoleViewSet, "unit_role")
+router.register(r"service_sector_role", ServiceSectorRoleViewSet, "service_sector_role")
 router.register(r"parameters/purpose", PurposeViewSet, "purpose")
 router.register(r"parameters/age_group", AgeGroupViewSet, "age_group")
 router.register(r"parameters/ability_group", AbilityGroupViewSet, "ability_group")
