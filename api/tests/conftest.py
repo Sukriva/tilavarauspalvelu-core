@@ -22,7 +22,7 @@ from reservation_units.models import (
 )
 from reservations.models import AbilityGroup, AgeGroup, Reservation, ReservationPurpose
 from resources.models import Resource
-from spaces.models import District, Location, Space
+from spaces.models import District, Location, Space, Unit
 
 
 @pytest.fixture(autouse=True)
@@ -56,6 +56,11 @@ def user_api_client(user):
 @pytest.fixture
 def resource():
     return Resource.objects.create(name="Test resource")
+
+
+@pytest.fixture
+def unit():
+    return Unit.objects.create(name="Test unit")
 
 
 @pytest.fixture
@@ -200,6 +205,22 @@ def valid_resource_data(space):
         "space": space.pk,
         "buffer_time_before": "00:05:00",
         "buffer_time_after": "00:05:00",
+    }
+
+
+@pytest.fixture
+def valid_reservation_unit_data(unit, equipment_hammer):
+    """ Valid JSON data for creating a new ReservationUnit """
+    return {
+        "name": {
+            "fi": "Uusi varausyksikkö",
+            "en": "New reservation unit",
+            "sv": "Nya reservation sak",
+        },
+        "require_introduction": False,
+        "terms_of_use": "Do not mess it up",
+        "equipment_ids": [equipment_hammer.id],
+        "unit_id": unit.pk
     }
 
 

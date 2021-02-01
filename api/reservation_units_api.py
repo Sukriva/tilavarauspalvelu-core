@@ -1,7 +1,7 @@
 from django.db.models import Sum
 from django_filters import rest_framework as filters
 from rest_framework import filters as drf_filters
-from rest_framework import mixins, serializers, viewsets
+from rest_framework import mixins, serializers, viewsets, permissions
 
 from api.base import HierarchyModelMultipleChoiceFilter, TranslatedModelSerializer
 from api.resources_api import ResourceSerializer
@@ -16,7 +16,8 @@ from reservation_units.models import (
     ReservationUnitImage,
     ReservationUnitType,
 )
-from spaces.models import District
+from spaces.models import District, Unit
+from permissions.api_permissions import ReservationUnitPermission
 
 
 class ReservationUnitFilter(filters.FilterSet):
@@ -91,6 +92,10 @@ class ReservationUnitSerializer(TranslatedModelSerializer):
         help_text="Ids of equipment available in this reservation unit.",
     )
 
+    unit_id = serializers.PrimaryKeyRelatedField(
+        queryset=Unit.objects.all(), source="unit"
+    )
+
     class Meta:
         model = ReservationUnit
         fields = [
@@ -107,6 +112,7 @@ class ReservationUnitSerializer(TranslatedModelSerializer):
             "building",
             "terms_of_use",
             "equipment_ids",
+            "unit_id"
         ]
         extra_kwargs = {
             "name": {
@@ -148,6 +154,7 @@ class ReservationUnitViewSet(viewsets.ModelViewSet):
     ordering_fields = ["name", "max_persons"]
     filterset_class = ReservationUnitFilter
     search_fields = ["name"]
+    permission_classes = [permissions.IsAuthenticated & ReservationUnitPermission]
 
     def get_queryset(self):
         qs = (
