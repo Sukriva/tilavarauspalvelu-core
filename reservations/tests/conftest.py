@@ -6,7 +6,7 @@ from applications.models import (
     Application,
     ApplicationEvent,
     ApplicationEventSchedule,
-    ApplicationPeriod,
+    ApplicationPeriod, EventReservationUnit,
 )
 from reservation_units.models import ReservationUnit
 
@@ -94,4 +94,21 @@ def recurring_application_event(application_with_reservation_units) -> Applicati
 def scheduled_for_monday(recurring_application_event) -> ApplicationEventSchedule:
     return ApplicationEventSchedule.objects.create(
         day=0, begin="10:00", end="12:00", application_event=recurring_application_event
+    )
+
+@pytest.fixture
+def matching_event_reservation_unit(recurring_application_event, reservation_unit) -> EventReservationUnit:
+    return EventReservationUnit.objects.create(
+        priority=100,
+        application_event=recurring_application_event,
+        reservation_unit=reservation_unit
+    )
+
+
+@pytest.fixture
+def not_matching_event_reservation_unit(recurring_application_event, second_reservation_unit) -> EventReservationUnit:
+    return EventReservationUnit.objects.create(
+        priority=100,
+        application_event=recurring_application_event,
+        reservation_unit=reservation_unit
     )
