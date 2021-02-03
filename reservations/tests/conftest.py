@@ -43,6 +43,14 @@ def reservation_unit() -> ReservationUnit:
 
 
 @pytest.fixture
+def second_reservation_unit():
+    reservation_unit = ReservationUnit.objects.create(
+        name_en="Second test reservation unit", require_introduction=False
+    )
+    return reservation_unit
+
+
+@pytest.fixture
 def application_period_with_reservation_units(
     reservation_unit, default_application_period
 ) -> ApplicationPeriod:
@@ -110,5 +118,5 @@ def not_matching_event_reservation_unit(recurring_application_event, second_rese
     return EventReservationUnit.objects.create(
         priority=100,
         application_event=recurring_application_event,
-        reservation_unit=reservation_unit
+        reservation_unit=second_reservation_unit
     )

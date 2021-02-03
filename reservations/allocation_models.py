@@ -72,7 +72,7 @@ class AllocationEvent(object):
         period_start: datetime.date,
         period_end: datetime.date,
     ):
-        self.space_ids = list(map(lambda x: x.id, application_event.event_reservation_units.all()))
+        self.space_ids = list(map(lambda x: x.reservation_unit.id, application_event.event_reservation_units.all()))
         self.id = application_event.id
         self.occurrences = application_event.get_all_occurrences()
         self.begin = application_event.begin
