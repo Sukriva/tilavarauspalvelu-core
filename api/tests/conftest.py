@@ -23,6 +23,7 @@ from reservation_units.models import (
 from reservations.models import AbilityGroup, AgeGroup, Reservation, ReservationPurpose
 from resources.models import Resource
 from spaces.models import District, Location, Space, Unit, ServiceSector
+from permissions.models import ServiceSectorRole, UnitRole
 
 
 @pytest.fixture(autouse=True)
@@ -41,6 +42,17 @@ def user():
     )
 
 
+@pytest.mark.django_db
+@pytest.fixture
+def user_2():
+    return get_user_model().objects.create(
+        username="test_user_2",
+        first_name="Jon",
+        last_name="Doe",
+        email="jon.doe@foo.com",
+    )
+
+
 @pytest.fixture
 def api_client():
     return APIClient()
@@ -48,6 +60,13 @@ def api_client():
 
 @pytest.fixture
 def user_api_client(user):
+    api_client = APIClient()
+    api_client.force_authenticate(user)
+    return api_client
+
+
+@pytest.fixture
+def user_2_api_client(user_2):
     api_client = APIClient()
     api_client.force_authenticate(user)
     return api_client
@@ -230,14 +249,25 @@ def valid_reservation_unit_data(unit, equipment_hammer):
         "unit_id": unit.pk
     }
 
+
 @pytest.fixture
-def valid_service_sector_role_admin_data(user, service_sector):
+def valid_service_sector_role_admin_data(user_2, service_sector):
     """ Valid JSON data for creating a new ReservationUnit """
     return {
 
-        "role": "admin",
+        "role": ServiceSectorRole.ROLE_ADMIN,
         "service_sector_id": service_sector.pk,
-        "user_id": user.pk
+        "user_id": user_2.pk
+    }
+
+
+@pytest.fixture
+def valid_service_sector_application_manager_role_data(user_2, service_sector):
+    """ Valid JSON data for creating a new ReservationUnit """
+    return {
+        "role": ServiceSectorRole.ROLE_APPLICATION_MANAGER,
+        "service_sector_id": service_sector.pk,
+        "user_id": user_2.pk
     }
 
 

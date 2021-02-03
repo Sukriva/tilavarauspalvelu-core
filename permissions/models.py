@@ -63,7 +63,7 @@ class ServiceSectorRole(BaseRole):
     )
 
     user = models.ForeignKey(
-        Unit,
+        User,
         verbose_name=_("User"),
         related_name="service_sector_roles",
         on_delete=models.CASCADE,
