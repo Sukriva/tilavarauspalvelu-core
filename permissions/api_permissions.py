@@ -1,8 +1,8 @@
 from rest_framework import permissions
 
-from spaces.models import Unit
+from spaces.models import Unit, ServiceSector
 
-from .helpers import can_manage_units_reservation_units, can_modify_reservation_unit
+from .helpers import can_manage_units_reservation_units, can_modify_reservation_unit, can_modify_service_sector_roles
 
 
 class ReservationUnitPermission(permissions.BasePermission):
@@ -19,7 +19,7 @@ class ReservationUnitPermission(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS
 
 
-class ApplicationPermission(permissions.BasePermission):
+class UnitRolePermission(permissions.BasePermission):
     def has_object_permission(self, request, view, reservation_unit):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -30,4 +30,18 @@ class ApplicationPermission(permissions.BasePermission):
             unit_id = request.data.get("unit_id")
             unit = Unit.objects.get(pk=unit_id)
             return can_manage_units_reservation_units(request.user, unit)
+        return request.method in permissions.SAFE_METHODS
+
+
+class ServiceSectorRolePermission(permissions.BasePermission):
+    def has_object_permission(self, request, view, service_sector):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return can_modify_service_sector_roles(request.user, service_sector)
+
+    def has_permission(self, request, view):
+        if request.method == "POST":
+            service_sector_id = request.data.get("service_sector_id")
+            service_sector = ServiceSector.objects.get(pk=service_sector_id)
+            return can_modify_service_sector_roles(request.user, service_sector)
         return request.method in permissions.SAFE_METHODS

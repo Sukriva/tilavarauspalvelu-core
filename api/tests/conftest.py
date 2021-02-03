@@ -22,7 +22,7 @@ from reservation_units.models import (
 )
 from reservations.models import AbilityGroup, AgeGroup, Reservation, ReservationPurpose
 from resources.models import Resource
-from spaces.models import District, Location, Space, Unit
+from spaces.models import District, Location, Space, Unit, ServiceSector
 
 
 @pytest.fixture(autouse=True)
@@ -124,6 +124,13 @@ def location():
 
 
 @pytest.fixture
+def service_sector():
+    return ServiceSector.objects.create(
+        name="Test service sector"
+    )
+
+
+@pytest.fixture
 def reservation_unit2(resource):
     reservation_unit = ReservationUnit.objects.create(
         name="Test reservation unit no. 2", require_introduction=False
@@ -221,6 +228,16 @@ def valid_reservation_unit_data(unit, equipment_hammer):
         "terms_of_use": "Do not mess it up",
         "equipment_ids": [equipment_hammer.id],
         "unit_id": unit.pk
+    }
+
+@pytest.fixture
+def valid_service_sector_role_admin_data(user, service_sector):
+    """ Valid JSON data for creating a new ReservationUnit """
+    return {
+
+        "role": "admin",
+        "service_sector_id": service_sector.pk,
+        "user_id": user.pk
     }
 
 
