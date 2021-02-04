@@ -1,11 +1,11 @@
-from rest_framework import mixins, viewsets, permissions, serializers
 from django.contrib.auth.models import User
+from rest_framework import mixins, permissions, serializers, viewsets
 
 from api.base import TranslatedModelSerializer
+from permissions.api_permissions import ServiceSectorRolePermission, UnitRolePermission
+from permissions.models import ServiceSectorRole, UnitRole
 from services.models import Service
 from spaces.models import ServiceSector
-from permissions.models import UnitRole, ServiceSectorRole
-from permissions.api_permissions import ServiceSectorRolePermission, UnitRolePermission
 
 
 class UnitRoleSerializer(TranslatedModelSerializer):
@@ -20,9 +20,10 @@ class ServiceSectorRoleSerializer(TranslatedModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), source="user"
     )
+
     class Meta:
         model = ServiceSectorRole
-        fields = ['service_sector_id', 'user_id', 'role']
+        fields = ["service_sector_id", "user_id", "role"]
 
 
 class UnitRoleViewSet(viewsets.ModelViewSet):

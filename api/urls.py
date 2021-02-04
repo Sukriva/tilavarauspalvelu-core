@@ -2,6 +2,7 @@ from rest_framework import routers
 
 from .application_period_api import ApplicationPeriodViewSet
 from .applications_api import ApplicationEventViewSet, ApplicationViewSet
+from .permissions_api import ServiceSectorRoleViewSet, UnitRoleViewSet
 from .reservation_units_api import (
     EquipmentCategoryViewSet,
     EquipmentViewSet,
@@ -11,7 +12,6 @@ from .reservation_units_api import (
 )
 from .reservations_api import AbilityGroupViewSet, AgeGroupViewSet, ReservationViewSet
 from .resources_api import ResourceViewSet
-from .permissions_api import UnitRoleViewSet, ServiceSectorRoleViewSet
 
 router = routers.DefaultRouter()
 

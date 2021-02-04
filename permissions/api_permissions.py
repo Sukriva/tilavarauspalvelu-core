@@ -1,8 +1,13 @@
 from rest_framework import permissions
 
-from spaces.models import Unit, ServiceSector
+from spaces.models import ServiceSector, Unit
 
-from .helpers import can_manage_units_reservation_units, can_modify_reservation_unit, can_modify_service_sector_roles
+from .helpers import (
+    can_manage_units_reservation_units,
+    can_modify_reservation_unit,
+    can_modify_service_sector_roles,
+    can_modify_unit_roles
+)
 
 
 class ReservationUnitPermission(permissions.BasePermission):
@@ -28,11 +33,9 @@ class UnitRolePermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method == "POST":
             unit_id = request.data.get("unit_id", None)
-
-            unit_id = request.data.get("unit_id", None)
-
+            unit_group_id = request.data.get("unit_group_id", None)
             unit = Unit.objects.get(pk=unit_id)
-            return can_manage_units_reservation_units(request.user, unit)
+            return can_modify_unit_roles(request.user, unit)
         return request.method in permissions.SAFE_METHODS
 
 

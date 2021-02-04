@@ -82,7 +82,7 @@ INSTALLED_APPS = [
     "elasticapm.contrib.django",
     "modeltranslation",
     "django.contrib.gis",
-    "permissions"
+    "permissions",
 ]
 
 MIDDLEWARE = [

@@ -1,13 +1,14 @@
 from django.db.models import Sum
 from django_filters import rest_framework as filters
 from rest_framework import filters as drf_filters
-from rest_framework import mixins, serializers, viewsets, permissions
+from rest_framework import mixins, permissions, serializers, viewsets
 
 from api.base import HierarchyModelMultipleChoiceFilter, TranslatedModelSerializer
 from api.resources_api import ResourceSerializer
 from api.services_api import ServiceSerializer
 from api.space_api import BuildingSerializer, LocationSerializer, SpaceSerializer
 from applications.models import ApplicationPeriod
+from permissions.api_permissions import ReservationUnitPermission
 from reservation_units.models import (
     Equipment,
     EquipmentCategory,
@@ -17,7 +18,6 @@ from reservation_units.models import (
     ReservationUnitType,
 )
 from spaces.models import District, Unit
-from permissions.api_permissions import ReservationUnitPermission
 
 
 class ReservationUnitFilter(filters.FilterSet):
@@ -112,7 +112,7 @@ class ReservationUnitSerializer(TranslatedModelSerializer):
             "building",
             "terms_of_use",
             "equipment_ids",
-            "unit_id"
+            "unit_id",
         ]
         extra_kwargs = {
             "name": {

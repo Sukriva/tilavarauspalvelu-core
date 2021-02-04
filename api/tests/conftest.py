@@ -14,6 +14,7 @@ from applications.models import (
     Person,
     Recurrence,
 )
+from permissions.models import ServiceSectorRole, UnitRole
 from reservation_units.models import (
     Equipment,
     EquipmentCategory,
@@ -22,8 +23,7 @@ from reservation_units.models import (
 )
 from reservations.models import AbilityGroup, AgeGroup, Reservation, ReservationPurpose
 from resources.models import Resource
-from spaces.models import District, Location, Space, Unit, ServiceSector
-from permissions.models import ServiceSectorRole, UnitRole
+from spaces.models import District, Location, ServiceSector, Space, Unit
 
 
 @pytest.fixture(autouse=True)
@@ -144,9 +144,7 @@ def location():
 
 @pytest.fixture
 def service_sector():
-    return ServiceSector.objects.create(
-        name="Test service sector"
-    )
+    return ServiceSector.objects.create(name="Test service sector")
 
 
 @pytest.fixture
@@ -246,7 +244,7 @@ def valid_reservation_unit_data(unit, equipment_hammer):
         "require_introduction": False,
         "terms_of_use": "Do not mess it up",
         "equipment_ids": [equipment_hammer.id],
-        "unit_id": unit.pk
+        "unit_id": unit.pk,
     }
 
 
@@ -254,10 +252,9 @@ def valid_reservation_unit_data(unit, equipment_hammer):
 def valid_service_sector_role_admin_data(user_2, service_sector):
     """ Valid JSON data for creating a new ReservationUnit """
     return {
-
         "role": ServiceSectorRole.ROLE_ADMIN,
         "service_sector_id": service_sector.pk,
-        "user_id": user_2.pk
+        "user_id": user_2.pk,
     }
 
 
@@ -267,7 +264,7 @@ def valid_service_sector_application_manager_role_data(user_2, service_sector):
     return {
         "role": ServiceSectorRole.ROLE_APPLICATION_MANAGER,
         "service_sector_id": service_sector.pk,
-        "user_id": user_2.pk
+        "user_id": user_2.pk,
     }
 
 
