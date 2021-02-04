@@ -175,11 +175,3 @@ def multiple_applications(
         "created_events": created_events,
         "schedules": schedules,
     }
-
-
-@pytest.fixture
-def foobar(request):
-    foobars = []
-    for i in request.param:
-        foobars.append(i)
-    return foobars

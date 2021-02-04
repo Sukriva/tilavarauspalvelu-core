@@ -145,6 +145,7 @@ class AllocationSolver(object):
                     <= 1
                 )
 
+    # Objective
     def maximize(self, model: cp_model.CpModel, selected: Dict):
         model.Maximize(
             sum(
