@@ -149,19 +149,20 @@ def multiple_applications(
                 min_duration=datetime.timedelta(minutes=event["duration"]),
                 max_duration=datetime.timedelta(minutes=event["duration"]),
                 name="Football",
-                events_per_week=1,
+                events_per_week=event["events_per_week"],
                 begin=datetime.date(year=2020, month=1, day=1),
                 end=datetime.date(year=2020, month=2, day=28),
                 biweekly=False,
             )
-            created_schedule = ApplicationEventSchedule.objects.create(
-                day=event["day"],
-                begin="10:00",
-                end="12:00",
-                application_event=created_event,
-            )
+            for schedule in event["schedules"]:
+                created_schedule = ApplicationEventSchedule.objects.create(
+                    day=schedule["day"],
+                    begin="10:00",
+                    end="12:00",
+                    application_event=created_event,
+                )
 
-            schedules.append(created_schedule)
+                schedules.append(created_schedule)
             created_events.append(created_event)
 
             EventReservationUnit.objects.create(
