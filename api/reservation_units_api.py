@@ -154,7 +154,7 @@ class ReservationUnitViewSet(viewsets.ModelViewSet):
     ordering_fields = ["name", "max_persons"]
     filterset_class = ReservationUnitFilter
     search_fields = ["name"]
-    permission_classes = [permissions.IsAuthenticated & ReservationUnitPermission]
+    permission_classes = [ReservationUnitPermission]
 
     def get_queryset(self):
         qs = (
