@@ -49,3 +49,34 @@ def test_non_matching_unit_in_application_and_application_period_can_not_be_allo
     solution = solver.solve()
 
     assert len(solution) == 0
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "multiple_applications",
+    (
+        [
+            {
+                "applications": [
+                    {"events": [{"duration": 300, "day": 0}]},
+                    {"events": [{"duration": 300, "day": 0}]},
+                    {"events": [{"duration": 300, "day": 0}]},
+                ]
+            }
+        ]
+    ),
+    indirect=True,
+)
+def test_should_only_allocate_events_which_fit_within_capacity(
+    application_period_with_reservation_units, multiple_applications
+):
+    data = AllocationData(application_period=application_period_with_reservation_units)
+
+    solver = AllocationSolver(allocation_data=data)
+
+    solution = solver.solve()
+
+    # Open 10 hours each day, we have three events to allocate with 300 minutes= 5 hours duration each
+    assert len(solution) == 2
+    assert solution[0].duration == datetime.timedelta(hours=5)
+    assert solution[1].duration == datetime.timedelta(hours=5)
