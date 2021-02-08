@@ -23,3 +23,4 @@ def test_getting_occurreces_between(recurring_application_event, scheduled_for_t
     occurrences = recurring_application_event.get_occurrences_between(start, end)
     assert occurrences[scheduled_for_tuesday.id].occurrences == [datetime.datetime(2020, 1, 14, 10, 0), datetime.datetime(2020, 1, 21, 10, 0)]
     assert occurrences[scheduled_for_tuesday.id].weekday == scheduled_for_tuesday.day
+

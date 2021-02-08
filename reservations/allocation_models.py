@@ -98,6 +98,7 @@ class AllocationEvent(object):
         self.occurrences = self.occurrences_to_integers_with_precision(
             application_event.get_all_occurrences()
         )
+        self.rules = application_event.get_all_rules()
         self.begin = application_event.begin
         self.end = application_event.begin
         self.period_start = period_start

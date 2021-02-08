@@ -400,6 +400,12 @@ class ApplicationEvent(models.Model):
     def get_status(self):
         return self.statuses.last()
 
+    def get_all_rules(self):
+        rules = {}
+        for event_shedule in self.application_event_schedules.all():
+            rules[event_shedule.id] = event_shedule.event_schedule_to_rrule()
+        return rules
+
     def get_all_occurrences(self):
 
         occurences = {}
@@ -484,6 +490,7 @@ class ApplicationEventSchedule(models.Model):
         on_delete=models.CASCADE,
         related_name="application_event_schedules",
     )
+
     def event_schedule_to_rrule(self) -> recurrence.Recurrence:
         first_matching_day = next_or_current_matching_weekday(
             self.application_event.begin, self.day

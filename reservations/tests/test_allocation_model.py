@@ -104,3 +104,19 @@ def test_should_map_period_start_and_end_from_application_period(
         data.allocation_events[0].period_end
         == application_with_reservation_units.application_period.reservation_period_end
     )
+
+@pytest.mark.django_db
+def test_mapping_rules(
+    application_period_with_reservation_units,
+    application_with_reservation_units,
+    recurring_application_event,
+    scheduled_for_monday,
+):
+
+    data = AllocationData(application_period=application_period_with_reservation_units)
+
+    rule = scheduled_for_monday.event_schedule_to_rrule()
+    assert (
+        data.allocation_events[0].rules[scheduled_for_monday.id]
+        == rule
+    )

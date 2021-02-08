@@ -103,7 +103,7 @@ def recurring_application_event(application_with_reservation_units) -> Applicati
 @pytest.fixture
 def scheduled_for_monday(recurring_application_event) -> ApplicationEventSchedule:
     return ApplicationEventSchedule.objects.create(
-        day=0, begin="10:00", end="12:00", application_event=recurring_application_event
+        day=0, begin=datetime.time(hour=10), end=datetime.time(hour=12), application_event=recurring_application_event
     )
 
 
