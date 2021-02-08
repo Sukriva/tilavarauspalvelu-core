@@ -407,6 +407,12 @@ class ApplicationEvent(models.Model):
             occurences[event_shedule.id] = event_shedule.get_occurences()
         return occurences
 
+    def get_occurrences_between(self, begin: datetime.datetime, end: datetime.datetime):
+        occurences = {}
+        for event_shedule in self.application_event_schedules.all():
+            occurences[event_shedule.id] = event_shedule.get_occurrences_between(begin, end)
+        return occurences
+
 
 class EventReservationUnit(models.Model):
 
@@ -478,9 +484,7 @@ class ApplicationEventSchedule(models.Model):
         on_delete=models.CASCADE,
         related_name="application_event_schedules",
     )
-
-    def get_occurences(self) -> [EventOccurrence]:
-        self.day
+    def event_schedule_to_rrule(self) -> recurrence.Recurrence:
         first_matching_day = next_or_current_matching_weekday(
             self.application_event.begin, self.day
         )
@@ -513,11 +517,24 @@ class ApplicationEventSchedule(models.Model):
                 myrule,
             ],
         )
+        return pattern
+
+    def get_occurences(self) -> [EventOccurrence]:
+        pattern = self.event_schedule_to_rrule()
         return EventOccurrence(
             weekday=self.day,
             begin=self.begin,
             end=self.end,
             occurrences=list(pattern.occurrences()),
+        )
+
+    def get_occurrences_between(self, begin: datetime.datetime, end: datetime.datetime) -> [EventOccurrence]:
+        pattern = self.event_schedule_to_rrule()
+        return EventOccurrence(
+            weekday=self.day,
+            begin=self.begin,
+            end=self.end,
+            occurrences=list(pattern.occurrences().between(after=begin, before=end)),
         )
 
 

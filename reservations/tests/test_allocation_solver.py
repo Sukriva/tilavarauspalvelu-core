@@ -437,3 +437,75 @@ def test_should_allocate_with_15_minutes_precision_rounded_up(
     assert len(solution) == 1
     assert solution[0].begin == datetime.time(hour=10, minute=30)
     assert solution[0].end == datetime.time(hour=11, minute=30)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "multiple_applications",
+    (
+        [
+            {
+                "applications": [
+                    {
+                        "events": [
+                            {
+                                "duration": 60,
+                                "events_per_week": 1,
+                                "schedules": [
+                                    {"day": 0, "start": "07:00", "end": "09:00"}
+                                ],
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    ),
+    indirect=True,
+)
+def test_should_not_allocate_outside_open_hours(
+    application_period_with_reservation_units, multiple_applications
+):
+    data = AllocationData(application_period=application_period_with_reservation_units)
+
+    solver = AllocationSolver(allocation_data=data)
+
+    solution = solver.solve()
+
+    assert len(solution) == 0
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "multiple_applications",
+    (
+        [
+            {
+                "applications": [
+                    {
+                        "events": [
+                            {
+                                "duration": 60,
+                                "events_per_week": 1,
+                                "schedules": [
+                                    {"day": 0, "start": "07:00", "end": "12:00"}
+                                ],
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    ),
+    indirect=True,
+)
+def test_should_allocate_between_open_hours_when_request_starts_before_opening(
+    application_period_with_reservation_units, multiple_applications
+):
+    data = AllocationData(application_period=application_period_with_reservation_units)
+
+    solver = AllocationSolver(allocation_data=data)
+
+    solution = solver.solve()
+
+    assert len(solution) == 1
+    assert solution[0].begin == datetime.time(hour=10, minute=00)
