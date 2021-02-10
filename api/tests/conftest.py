@@ -15,7 +15,7 @@ from applications.models import (
     Person,
     Recurrence,
 )
-from permissions.models import ServiceSectorRole, UnitRole
+from permissions.models import ServiceSectorRole, UnitRole, UnitRoleChoice, UnitRolePermission
 from reservation_units.models import (
     Equipment,
     EquipmentCategory,
@@ -295,7 +295,21 @@ def valid_reservation_unit_data(unit, equipment_hammer):
 
 
 @pytest.fixture
-def valid_service_sector_role_admin_data(user_2, service_sector):
+def location():
+    return UnitRolePermission.objects.create(
+        address_street="Osoitetienkatu 13b", address_zip="33540", address_city="Tampere"
+    )
+
+
+@pytest.fixture
+def location():
+    return UnitRoleChoice.objects.create(
+        code="manager", verbose_name="Unit Manager"
+    )
+
+
+@pytest.fixture
+def valid_service_sector_role_admin_data(user_2, service_sector, service_sector_admin):
     """ Valid JSON data for creating a new ReservationUnit """
     return {
         "role": ServiceSectorRole.ROLE_ADMIN,
@@ -305,7 +319,7 @@ def valid_service_sector_role_admin_data(user_2, service_sector):
 
 
 @pytest.fixture
-def valid_service_sector_application_manager_role_data(user_2, service_sector):
+def valid_service_sector_application_manager_role_data(user_2, service_sector, service_sector_application_manager):
     """ Valid JSON data for creating a new ReservationUnit """
     return {
         "role": ServiceSectorRole.ROLE_APPLICATION_MANAGER,
