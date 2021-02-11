@@ -22,6 +22,7 @@ from applications.models import (
 )
 from reservation_units.models import Purpose, ReservationUnit
 from reservations.models import AbilityGroup, AgeGroup
+from permissions.api_permissions import ApplicationPermission
 
 MINIMUM_TIME = timezone.datetime(
     1970, 1, 1, 0, 0, 0, 3, timezone.get_default_timezone()
@@ -508,10 +509,9 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
-
     queryset = Application.objects.all()
-
     serializer_class = ApplicationSerializer
+    permission_classes = [ApplicationPermission]
 
 
 class ApplicationEventViewSet(viewsets.ModelViewSet):

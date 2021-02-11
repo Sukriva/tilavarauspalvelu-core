@@ -129,8 +129,7 @@ def test_reservation_unit_max_persons_filter(
 
 @pytest.mark.django_db
 def test_reservation_unit_create(
-    user, user_api_client, equipment_hammer, valid_reservation_unit_data
-):
+    user, user_api_client, equipment_hammer, valid_reservation_unit_data):
     assert ReservationUnit.objects.count() == 0
 
     # Test without permissions
@@ -141,7 +140,7 @@ def test_reservation_unit_create(
 
     # Test with unit manager role
     user.unit_roles.create(
-        unit_id=valid_reservation_unit_data["unit_id"], user=user, role="manager"
+        unit_id=valid_reservation_unit_data["unit_id"], user=user, role_id="manager"
     )
     response = user_api_client.post(
         reverse("reservationunit-list"), data=valid_reservation_unit_data, format="json"

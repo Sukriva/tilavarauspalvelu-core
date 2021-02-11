@@ -3,10 +3,13 @@ from django.contrib import admin
 from .models import (
     ServiceSectorRoleChoice,
     ServiceSectorRolePermission,
+    ServiceSectorRole,
     UnitRoleChoice,
     UnitRolePermission,
     UnitRole,
-    ServiceSectorRole,
+    GeneralRole,
+    GeneralRoleChoice,
+    GeneralRolePermission
 )
 
 
@@ -16,6 +19,10 @@ class UnitRolePermissionInline(admin.TabularInline):
 
 class ServiceSectorRolePermissionInline(admin.TabularInline):
     model = ServiceSectorRolePermission
+
+
+class GeneralRolePermissionInline(admin.TabularInline):
+    model = GeneralRolePermission
 
 
 @admin.register(UnitRoleChoice)
@@ -30,9 +37,20 @@ class ServiceSectorRoleChoiceAdmin(admin.ModelAdmin):
     inlines = [ServiceSectorRolePermissionInline]
 
 
+@admin.register(GeneralRoleChoice)
+class GeneralRoleChoiceAdmin(admin.ModelAdmin):
+    model = GeneralRoleChoice
+    inlines = [GeneralRolePermissionInline]
+
+
 @admin.register(UnitRole)
 class UnitRoleAdmin(admin.ModelAdmin):
     model = UnitRole
+
+
+@admin.register(GeneralRole)
+class GeneralRoleAdmin(admin.ModelAdmin):
+    model = GeneralRole
 
 
 @admin.register(ServiceSectorRole)

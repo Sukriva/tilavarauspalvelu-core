@@ -15,7 +15,7 @@ GENERAL_PERMISSIONS = (
     ),
     ("can_manage_purposes", _("Can create, edit and delete purposes in the whole system")),
     ("can_manage_age_groups", _("Can create, edit and delete age groups in the whole system")),
-    ("can_manage_disctrics", _("Can create, edit and delete age groups in the whole system")),
+    ("can_manage_districts", _("Can create, edit and delete districts in the whole system")),
     ("can_manage_ability_groups", _("Can create, edit and delete ability groups in the whole system")),
     ("can_manage_reservation_unit_types", _("Can create, edit and delete reservation unit types in the whole system")),
     ("can_manage_equipment_categories", _("Can create, edit and delete equipment_categories in the whole system")),
@@ -28,6 +28,14 @@ UNIT_PERMISSIONS = (
     (
     "can_manage_reservation_units",
         _("Can create, edit and delete reservation units in the unit"),
+    ),
+    (
+    "can_manage_reservations",
+        _("Can create, edit and cancel in reservation units in the unit"),
+    ),
+    (
+    "can_view_reservations",
+        _("Can view details of all reservations in the unit"),
     ),
 )
 
@@ -77,7 +85,7 @@ class UnitRolePermission(models.Model):
     permission = models.CharField(verbose_name=_("Permission"), max_length=255, choices=UNIT_PERMISSIONS)
 
 
-class GeneralPermission(models.Model):
+class GeneralRolePermission(models.Model):
     role = models.ForeignKey(GeneralRoleChoice, verbose_name=_("Role"), related_name="permissions", on_delete=models.CASCADE)
     permission = models.CharField(verbose_name=_("Permission"), max_length=255, choices=GENERAL_PERMISSIONS)
 

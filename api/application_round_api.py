@@ -4,6 +4,7 @@ from applications.models import ApplicationRound, ApplicationRoundBasket
 from reservation_units.models import Purpose, ReservationUnit
 from reservations.models import AgeGroup
 from spaces.models import ServiceSector
+from permissions.api_permissions import ApplicationRoundPermission
 
 
 class ApplicationRoundBasketSerializer(serializers.ModelSerializer):
@@ -189,3 +190,4 @@ class ApplicationRoundSerializer(serializers.ModelSerializer):
 class ApplicationRoundViewSet(viewsets.ModelViewSet):
     queryset = ApplicationRound.objects.all()
     serializer_class = ApplicationRoundSerializer
+    permissions_classes = [ApplicationRoundPermission]

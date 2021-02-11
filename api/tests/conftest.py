@@ -79,8 +79,15 @@ def resource():
 
 
 @pytest.fixture
-def unit():
-    return Unit.objects.create(name="Test unit")
+def service_sector():
+    return ServiceSector.objects.create(name="Test service sector")
+
+
+@pytest.fixture
+def unit(service_sector):
+    test_unit = Unit.objects.create(name="Test unit")
+    test_unit.service_sectors.set([service_sector])
+    return test_unit
 
 
 @pytest.fixture
@@ -96,11 +103,6 @@ def space(location, parent_space):
 @pytest.fixture
 def child_space(location, space):
     return Space.objects.create(name="Child space", location=location, parent=space)
-
-
-@pytest.fixture
-def service_sector():
-    return ServiceSector.objects.create(name="Test service sector")
 
 
 @pytest.fixture
@@ -295,17 +297,16 @@ def valid_reservation_unit_data(unit, equipment_hammer):
 
 
 @pytest.fixture
-def location():
-    return UnitRolePermission.objects.create(
-        address_street="Osoitetienkatu 13b", address_zip="33540", address_city="Tampere"
-    )
-
-
-@pytest.fixture
-def location():
-    return UnitRoleChoice.objects.create(
+def unit_role_manager():
+    unit_role_choice = UnitRoleChoice.objects.create(
         code="manager", verbose_name="Unit Manager"
     )
+    UnitRolePermission.objects.create(
+        permission="can_manage_reservation_units",
+        role=unit_role_choice
+    )
+
+    return unit_role_choice
 
 
 @pytest.fixture

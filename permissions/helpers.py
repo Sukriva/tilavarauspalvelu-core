@@ -1,29 +1,35 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-from applications.models import Application
+from applications.models import Application, ApplicationRound
 from reservation_units.models import ReservationUnit
 from spaces.models import ServiceSector, Unit
 
 
-def is_admin(user: User):
+def is_superuser(user: User):
     return user.is_superuser
 
 
-def has_unit_permission(user: User, unit: Unit, required_permission: str) -> bool:
-    if not unit:
+def has_unit_permission(user: User, units: list, required_permission: str) -> bool:
+    if not units:
         return False
-    unit_groups = unit.unit_groups.all()
+    unit_groups = []
+    for unit in units:
+        unit_groups += list(unit.unit_groups.all())
+
+
     return user.unit_roles.filter(
-        Q(unit=unit) | Q(unit_group__in=unit_groups), role__permissions__permission=required_permission
+        Q(unit__in=units) | Q(unit_group__in=unit_groups), role__permissions__permission=required_permission
     ).exists()
 
 
 def has_service_sector_permission(
-    user: User, service_sector: ServiceSector, required_permission: str
+    user: User, service_sectors: list, required_permission: str
 ) -> bool:
+    if not service_sectors:
+        return False
     return user.service_sector_roles.filter(
-        service_sector=service_sector, role__permissions__permission=required_permission
+        service_sector__in=service_sectors, role__permissions__permission=required_permission
     ).exists()
 
 
@@ -37,25 +43,27 @@ def has_general_permission(
 def can_modify_service_sector_roles(user: User, service_sector: ServiceSector) -> bool:
     permission = "can_modify_service_sector_roles"
     return has_service_sector_permission(
-        user, service_sector, permission
-    ) or is_admin(user)
+        user, [service_sector], permission
+    ) or has_general_permission(user, permission) or is_superuser(user)
 
 
 def can_modify_unit_roles(user: User, unit: Unit) -> bool:
     permission = "can_modify_unit_roles"
     return (
-        has_unit_permission(user, unit, permission)
-        or has_service_sector_permission(user, unit.service_sector, permission)
-        or is_admin(user)
+        has_unit_permission(user, [unit], permission)
+        or has_service_sector_permission(user, list(unit.service_sectors.all()), permission)
+        or is_superuser(user)
+        or has_general_permission(user, permission)
     )
 
 
 def can_manage_units_reservation_units(user: User, unit: Unit) -> bool:
-    permission = "can_manage_units_reservation_units"
+    permission = "can_manage_reservation_units"
     return (
-        has_unit_permission(user, unit, permission)
-        or has_service_sector_permission(user, unit.service_sector, permission)
-        or is_admin(user)
+        has_unit_permission(user, [unit], permission)
+        or has_service_sector_permission(user, list(unit.service_sectors.all()), permission)
+        or is_superuser(user)
+        or has_general_permission(user, permission)
     )
 
 
@@ -64,7 +72,32 @@ def can_modify_reservation_unit(user: User, reservation_unit: ReservationUnit) -
 
 
 def can_handle_application(user: User, application: Application) -> bool:
-    permission = "can_handle_application"
+    permission = "can_handle_applications"
     return has_service_sector_permission(
-        user, application.application_period.service_sector, permission
+        user, [application.application_period.service_sector], permission
     )
+
+
+def can_manage_service_sectors_application_rounds(user: User, service_sector: ServiceSector) -> bool:
+    permission = "can_manage_application_rounds"
+    return has_service_sector_permission(
+        user, [service_sector], permission
+    )
+
+
+def can_modify_application_round(user: User, application_round: ApplicationRound) -> bool:
+    return can_manage_service_sectors_application_rounds(user, application_round.service_sector)
+
+
+def can_manage_service_sectors_applications(user: User, service_sector: ServiceSector) -> bool:
+    permission = "can_manage_application_rounds"
+    return has_service_sector_permission(
+        user, [service_sector], permission
+    )
+
+
+def can_modify_application(user: User, application: Application) -> bool:
+    permission = "can_handle_applications"
+    return has_service_sector_permission(
+        user, [application.application_round.service_sector], permission
+    ) or application.user == user

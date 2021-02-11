@@ -6,7 +6,10 @@ from .helpers import (
     can_manage_units_reservation_units,
     can_modify_reservation_unit,
     can_modify_service_sector_roles,
-    can_modify_unit_roles
+    can_modify_unit_roles,
+    can_manage_service_sectors_application_rounds,
+    can_modify_application_round,
+    can_modify_application
 )
 
 
@@ -51,6 +54,40 @@ class ServiceSectorRolePermission(permissions.BasePermission):
             try:
                 service_sector = ServiceSector.objects.get(pk=service_sector_id)
                 return can_modify_service_sector_roles(request.user, service_sector)
+            except ServiceSector.DoesNotExist:
+                return False
+        return request.method in permissions.SAFE_METHODS
+
+
+class ApplicationRoundPermission(permissions.BasePermission):
+    def has_object_permission(self, request, view, application_round):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return can_modify_application_round(request.user, application_round)
+
+    def has_permission(self, request, view):
+        if request.method == "POST":
+            service_sector_id = request.data.get("service_sector_id")
+            try:
+                service_sector = ServiceSector.objects.get(pk=service_sector_id)
+                return can_manage_service_sectors_application_rounds(request.user, service_sector)
+            except ServiceSector.DoesNotExist:
+                return False
+        return request.method in permissions.SAFE_METHODS
+
+
+class ApplicationPermission(permissions.BasePermission):
+    def has_object_permission(self, request, view, application):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return can_modify_application(request.user, application)
+
+    def has_permission(self, request, view):
+        if request.method == "POST":
+            service_sector_id = request.data.get("service_sector_id")
+            try:
+                service_sector = ServiceSector.objects.get(pk=service_sector_id)
+                return can_manage_service_sectors_application_rounds(request.user, service_sector)
             except ServiceSector.DoesNotExist:
                 return False
         return request.method in permissions.SAFE_METHODS
