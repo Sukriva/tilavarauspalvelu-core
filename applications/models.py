@@ -278,7 +278,9 @@ class ApplicationRoundBasket(models.Model):
         verbose_name=_("Must be main purpose of the applicant"), default=False
     )
     customer_type = ArrayField(
-        models.CharField(max_length=50, choices=CUSTOMER_TYPE_CHOICES, null=True, blank=True),
+        models.CharField(
+            max_length=50, choices=CUSTOMER_TYPE_CHOICES, null=True, blank=True
+        ),
     )
 
     age_groups = models.ManyToManyField("reservations.AgeGroup")

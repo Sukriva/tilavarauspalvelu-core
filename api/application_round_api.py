@@ -25,7 +25,7 @@ class ApplicationRoundBasketSerializer(serializers.ModelSerializer):
             "age_group_ids",
             "home_city",
             "allocation_percentage",
-            "order_number"
+            "order_number",
         ]
         extra_kwargs = {
             "name": {
@@ -164,12 +164,10 @@ class ApplicationRoundSerializer(serializers.ModelSerializer):
         return application_round
 
     def validate(self, data):
-        baskets = data["appliaction_round_baskets"]
-        basket_order_numbers = list(map(lambda basket: basket.order_number, baskets))
+        baskets = data["application_round_baskets"]
+        basket_order_numbers = list(map(lambda basket: basket["order_number"], baskets))
         if len(basket_order_numbers) > len(set(basket_order_numbers)):
-            raise serializers.ValidationError(
-                "Order numbers should be unique"
-            )
+            raise serializers.ValidationError("Order numbers should be unique")
 
         return data
 

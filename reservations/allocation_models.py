@@ -4,7 +4,12 @@ from typing import Dict
 
 from django.utils import timezone
 
-from applications.models import ApplicationEvent, ApplicationRound, EventOccurrence, ApplicationRoundBasket
+from applications.models import (
+    ApplicationEvent,
+    ApplicationRound,
+    ApplicationRoundBasket,
+    EventOccurrence,
+)
 from reservation_units.models import ReservationUnit
 
 
@@ -123,11 +128,13 @@ class AllocationEvent(object):
             allocation_occurrences[occurrence_id] = AllocationOccurrence(occurrence)
         return allocation_occurrences
 
+
 class AllocationBasket(object):
     def __init__(self, application_round_basket: ApplicationRoundBasket):
         self.id = application_round_basket.id
         self.allocation_percentage = application_round_basket.allocation_percentage
         self.allocation_events = []
+
 
 class AllocationData(object):
     def __init__(self, application_round: ApplicationRound):
@@ -142,12 +149,11 @@ class AllocationData(object):
             for application_event in application.application_events.all():
                 self.allocation_events.append(
                     AllocationEvent(
-                        application_event=application_event, period_start=self.period_start, period_end=self.period_end
+                        application_event=application_event,
+                        period_start=self.period_start,
+                        period_end=self.period_end,
                     )
                 )
-
-
-
 
     def get_all_dates(self):
         dates = []
