@@ -392,6 +392,11 @@ class ApplicationSerializer(serializers.ModelSerializer):
         help_text="Status of this application", choices=ApplicationStatus.STATUS_CHOICES
     )
 
+    billing_address = AddressSerializer(
+        help_text="Billing address for the application",
+        allow_null=True,
+    )
+
     class Meta:
         model = Application
         fields = [
@@ -402,6 +407,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
             "user",
             "application_events",
             "status",
+            "billing_address",
         ]
 
     @staticmethod
@@ -493,6 +499,10 @@ class ApplicationSerializer(serializers.ModelSerializer):
             request.user if request and request.user.is_authenticated else None
         )
 
+        billing_address_data = validated_data.pop("billing_address")
+        billing_address = Address.objects.create(**billing_address_data)
+        validated_data["billing_address"] = billing_address
+
         status = validated_data.pop("status")
 
         contact_person_data = validated_data.pop("contact_person")
@@ -520,6 +530,10 @@ class ApplicationSerializer(serializers.ModelSerializer):
         request_user = (
             request.user if request and request.user.is_authenticated else None
         )
+
+        billing_address_data = validated_data.pop("billing_address")
+        billing_address = Address.objects.create(**billing_address_data)
+        validated_data["billing_address"] = billing_address
 
         status = validated_data.pop("status")
 
