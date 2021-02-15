@@ -96,6 +96,19 @@ class Organisation(models.Model):
         Address, null=True, blank=True, on_delete=models.SET_NULL
     )
 
+    age_groups = models.ManyToManyField(
+        "reservations.AgeGroup",
+        verbose_name=_("Age groups"),
+        related_name="organisations",
+        blank=True,
+    )
+
+    active_members = models.PositiveIntegerField(
+        verbose_name=_("Active member"),
+        null=True,
+        blank=True,
+    )
+
     def __str__(self):
         return self.name
 
