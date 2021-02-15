@@ -100,6 +100,7 @@ class Organisation(models.Model):
         "reservations.AgeGroup",
         verbose_name=_("Age groups"),
         related_name="organisations",
+        null=True,
         blank=True,
     )
 

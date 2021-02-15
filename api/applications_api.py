@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers, viewsets
 from rest_framework.exceptions import ValidationError
 
+from api.reservations_api import AgeGroupSerializer
 from applications.models import (
     Address,
     Application,
@@ -53,10 +54,18 @@ class AddressViewSet(viewsets.ModelViewSet):
 class OrganisationSerializer(serializers.ModelSerializer):
 
     id = serializers.IntegerField(allow_null=True, required=False)
+    age_groups = AgeGroupSerializer(many=True)
 
     class Meta:
         model = Organisation
-        fields = ["id", "name", "identifier", "year_established"]
+        fields = [
+            "id",
+            "name",
+            "identifier",
+            "year_established",
+            "active_members",
+            "age_groups",
+        ]
         extra_kwargs = {
             "name": {
                 "help_text": "Official name of the organisation",
