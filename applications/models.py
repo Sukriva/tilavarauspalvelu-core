@@ -18,6 +18,8 @@ from tilavarauspalvelu.utils.date_util import (
     previous_or_current_matching_weekday,
 )
 
+Q = models.Q
+
 
 def year_not_in_future(year: Optional[int]):
     if year is None:
@@ -238,6 +240,17 @@ class ApplicationRound(models.Model):
     def get_status(self):
         return self.statuses.last()
 
+    def get_application_events_by_basket(self):
+        handled_application_events: [ApplicationEvent] = {}
+        for basket in sorted(self.application_round_baskets.all(), key=lambda k: k.order_number):
+            print("titties")
+            handled = [j for i in handled_application_events.values() for j in i]
+
+            foo = handled_application_events.values()
+            handled_application_events[basket.id] = (basket.get_application_events_in_basket(handled))
+        return handled_application_events
+
+
     def __str__(self):
         return "{} ({} - {})".format(
             self.name, self.reservation_period_begin, self.reservation_period_end
@@ -292,6 +305,23 @@ class ApplicationRoundBasket(models.Model):
     order_number = models.PositiveSmallIntegerField(
         verbose_name=_("Order number"), default=1, null=False, blank=True
     )
+
+    def get_application_events_in_basket(self, applicationevents):
+        events = ApplicationEvent.objects.filter()
+        bar = ApplicationEvent.objects.all()
+
+        if self.purpose is not None:
+            events = events.filter(biweekly=False)
+        if len(self.age_groups.all()) > 0:
+            events.filter(age_groups__in=self.age_groups.all())
+        if len(applicationevents) > 0:
+            qwoeih = list(map(lambda x: x.id, applicationevents))
+            events = events.exclude(id__in=list(map(lambda x: x.id, applicationevents)))
+
+        #events.exclude(pk__in=list(map(lambda x: x.id, applicationevents)))
+        foo = list(events.all())
+        events = events.filter(purpose=self.purpose)
+        return list(events.all())
 
     def __str__(self):
         return "{} ({})".format(self.name, self.application_round.name)

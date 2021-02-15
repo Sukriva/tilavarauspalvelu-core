@@ -14,3 +14,27 @@ def test_getting_occurences(recurring_application_event, scheduled_for_tuesday):
         start += delta
     assert occurrences[scheduled_for_tuesday.id].occurrences == dates
     assert occurrences[scheduled_for_tuesday.id].weekday == scheduled_for_tuesday.day
+
+
+@pytest.mark.django_db
+def test_should_filter_to_baskets_by_purpose(default_application_round, application_round_basket_one, recurring_application_event):
+    events_by_baskets = default_application_round.get_application_events_by_basket()
+
+    assert events_by_baskets == {application_round_basket_one.id: [recurring_application_event]}
+
+
+@pytest.mark.django_db
+def test_should_exclude_if_purpose_does_not_match(default_application_round, application_round_basket_one, recurring_application_event, purpose_two):
+    application_round_basket_one.purpose = purpose_two
+    application_round_basket_one.save()
+
+    events_by_baskets = default_application_round.get_application_events_by_basket()
+
+    assert events_by_baskets == {application_round_basket_one.id: []}
+
+
+@pytest.mark.django_db
+def test_should_prioritize_highest_order_number_when_both_baskets_fit(default_application_round, application_round_basket_one, application_round_basket_two, recurring_application_event):
+    events_by_baskets = default_application_round.get_application_events_by_basket()
+
+    assert events_by_baskets == {application_round_basket_one.id: [recurring_application_event], application_round_basket_two.id: []}
