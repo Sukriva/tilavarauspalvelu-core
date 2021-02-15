@@ -95,6 +95,11 @@ class Organisation(models.Model):
         Address, null=True, blank=True, on_delete=models.SET_NULL
     )
 
+    core_business = models.TextField(
+        verbose_name=_("Core business of this organization"),
+        blank=True,
+    )
+
     def __str__(self):
         return self.name
 
