@@ -7,25 +7,29 @@ from applications.models import (
     ApplicationEvent,
     ApplicationEventSchedule,
     ApplicationRound,
-    ApplicationRoundBasket
+    ApplicationRoundBasket,
 )
+from reservation_units.models import Purpose
 
-from reservation_units.models import (
-    Purpose
-)
-
+from reservations.models import AgeGroup
 
 @pytest.fixture
 def purpose() -> Purpose:
-    return Purpose.objects.create(
-        name = "Football"
-    )
+    return Purpose.objects.create(name="Football")
+
 
 @pytest.fixture
 def purpose_two() -> Purpose:
-    return Purpose.objects.create(
-        name = "Scating"
-    )
+    return Purpose.objects.create(name="Scating")
+
+
+@pytest.fixture
+def five_to_ten_age_group() -> AgeGroup:
+    return AgeGroup.objects.create(minimum=5, maximum=10)
+
+@pytest.fixture
+def fifty_to_eighty_age_group() -> AgeGroup:
+    return AgeGroup.objects.create(minimum=5, maximum=10)
 
 @pytest.fixture
 def default_application_round(purpose) -> ApplicationRound:
@@ -58,7 +62,7 @@ def recurring_application_event(minimal_application, purpose) -> ApplicationEven
         begin=datetime.date(year=2020, month=1, day=1),
         end=datetime.date(year=2020, month=2, day=28),
         biweekly=False,
-        purpose=purpose
+        purpose=purpose,
     )
 
 
@@ -68,25 +72,24 @@ def scheduled_for_tuesday(recurring_application_event) -> ApplicationEventSchedu
         day=1, begin="10:00", end="12:00", application_event=recurring_application_event
     )
 
+
 @pytest.fixture
-def application_round_basket_one(default_application_round, purpose):
+def application_round_basket_one(default_application_round, purpose) -> ApplicationRoundBasket:
     return ApplicationRoundBasket.objects.create(
         name="Basket with order number one",
         application_round=default_application_round,
         purpose=purpose,
         order_number=1,
-        customer_type=[ApplicationRoundBasket.CUSTOMER_TYPE_NONPROFIT]
-
+        customer_type=[ApplicationRoundBasket.CUSTOMER_TYPE_NONPROFIT],
     )
 
 
 @pytest.fixture
-def application_round_basket_two(default_application_round, purpose):
+def application_round_basket_two(default_application_round, purpose) -> ApplicationRoundBasket:
     return ApplicationRoundBasket.objects.create(
         name="Basket with order number two",
         application_round=default_application_round,
         purpose=purpose,
         order_number=2,
-        customer_type=[]
-
+        customer_type=[],
     )
